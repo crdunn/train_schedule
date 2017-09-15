@@ -1,32 +1,90 @@
-  // var config = {
-  //   apiKey: "AIzaSyCrU6bBWJ-rkA80ytYVZl9mrFpk0N3zgYs",
-  //   authDomain: "myfirstproject-abadd.firebaseapp.com",
-  //   databaseURL: "https://myfirstproject-abadd.firebaseio.com",
-  //   projectId: "myfirstproject-abadd",
-  //   storageBucket: "myfirstproject-abadd.appspot.com",
-  //   messagingSenderId: "159759071992"
-  // };
-  // firebase.initializeApp(config);
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCrU6bBWJ-rkA80ytYVZl9mrFpk0N3zgYs",
+    authDomain: "myfirstproject-abadd.firebaseapp.com",
+    databaseURL: "https://myfirstproject-abadd.firebaseio.com",
+    projectId: "myfirstproject-abadd",
+    storageBucket: "myfirstproject-abadd.appspot.com",
+    messagingSenderId: "159759071992"
+  };
+  firebase.initializeApp(config);
+  var dataRef = firebase.database();
 
-i = 4
+var j = 0;
+var newName
+var newDest
+var newFreq
+var newFirst
+var tMinutesTillTrain
+var nextT
 
+dataRef.ref().on("child_added", function(childSnapshot) {
+  newName = childSnapshot.val().train;
+  newDest = childSnapshot.val().destination;
+  newFreq =  childSnapshot.val().frequency;
+  newFirst = childSnapshot.val().firstTrain;
 
+  trainCalc ();
 
-
-
-
-
+});
 
 
 $("#submit-new").on("click", function(event){
-	event.preventDefault();
+  event.preventDefault();
+  newName = $("#new-name").val();
+  newDest = $("#new-destination").val();
+  newFirst = $("#new-first").val();
+  newFreq = $("#new-frequency").val();
 
-	var newName = $("#new-name").val();
-	var newDest = $("#new-destination").val();
-	var newFirst = $("#new-first").val();
-	var newFreq = $("#new-frequency").val();
+  dataRef.ref().push({
+    train: newName,
+    destination: newDest,
+    firstTrain: newFirst,
+    frequency: newFreq
+  });
 
-	$("#tableBody").append('<tr><th scope="row">'+newName+'</th><td id="dest'+i+'">'+newDest+'</td><td id="freq'+i+'">#</td><td id="next3">00:00</td><td id="away'+i+'">'+i+'</td></tr>');
-	i++
-	
-})
+  $("#new-name").empty();
+  $("#new-destination").empty();
+  $("#new-first").empty();
+  $("#new-frequency").empty();
+
+  // trainCalc();
+  j++;
+});
+
+
+
+function trainCalc (){
+    console.log("j="+j);
+
+    var tFrequency = newFreq;
+
+    var firstTime = newFirst;
+
+    // First Time (pushed back 1 year to make sure it comes before current time)
+    var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
+    console.log(firstTimeConverted);
+
+    // Current Time
+    var currentTime = moment();
+    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+    // Difference between the times
+    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+    console.log("DIFFERENCE IN TIME: " + diffTime);
+
+    // Time apart (remainder)
+    var tRemainder = diffTime % tFrequency;
+    console.log(tRemainder);
+
+    // Minute Until Train
+    tMinutesTillTrain = tFrequency - tRemainder;
+    console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+    // Next Train
+    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+    console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+    nextT = moment(nextTrain).format("hh:mm");
+
+    $("#tableBody").append('<tr><th scope="row">'+newName+'</th><td id="dest'+j+'">'+newDest+'</td><td id="freq'+j+'">'+newFreq+'</td><td id="next'+j+'">'+nextT+'</td><td id="away'+j+'">'+tMinutesTillTrain+'</td></tr>');
+};  
