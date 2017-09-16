@@ -1,0 +1,13 @@
+body {
+	background-color: grey;
+}
+
+.jumbotron {
+	background-color: brown;
+	color: white;
+}
+
+.panel-body{
+	background-color: black;
+	color: white;
+}
