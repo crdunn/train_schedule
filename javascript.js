@@ -18,17 +18,18 @@ var newFirst
 var tMinutesTillTrain
 var nextT
 
+// Pulls stored data from firebase on page load and when a train is added
 dataRef.ref().on("child_added", function(childSnapshot) {
   newName = childSnapshot.val().train;
   newDest = childSnapshot.val().destination;
   newFreq =  childSnapshot.val().frequency;
   newFirst = childSnapshot.val().firstTrain;
-
+//takes data from Firebase and claculates departures and time locally
   trainCalc ();
 
 });
 
-
+// Pushes new trains to Firebase
 $("#submit-new").on("click", function(event){
   event.preventDefault();
   newName = $("#new-name").val();
@@ -48,12 +49,11 @@ $("#submit-new").on("click", function(event){
   $("#new-first").empty();
   $("#new-frequency").empty();
 
-  // trainCalc();
   j++;
 });
 
 
-
+// Working code from an in class assignment.
 function trainCalc (){
     console.log("j="+j);
 
@@ -86,5 +86,6 @@ function trainCalc (){
     console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
     nextT = moment(nextTrain).format("hh:mm");
 
+    //appends data to the panel div on the html body
     $("#tableBody").append('<tr><th scope="row">'+newName+'</th><td id="dest'+j+'">'+newDest+'</td><td id="freq'+j+'">'+newFreq+'</td><td id="next'+j+'">'+nextT+'</td><td id="away'+j+'">'+tMinutesTillTrain+'</td></tr>');
 };  
