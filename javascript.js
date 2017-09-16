@@ -18,6 +18,7 @@ var newFirst
 var tMinutesTillTrain
 var nextT
 
+
 // Pulls stored data from firebase on page load and when a train is added
 dataRef.ref().on("child_added", function(childSnapshot) {
   newName = childSnapshot.val().train;
@@ -25,7 +26,7 @@ dataRef.ref().on("child_added", function(childSnapshot) {
   newFreq =  childSnapshot.val().frequency;
   newFirst = childSnapshot.val().firstTrain;
 //takes data from Firebase and claculates departures and time locally
-  trainCalc ();
+  i++
 
 });
 
